@@ -1,11 +1,16 @@
 package cleancode.minesweeper.tobe;
 
+import cleancode.minesweeper.tobe.gameLevel.Beginner;
+import cleancode.minesweeper.tobe.gameLevel.GameLevel;
+
 public class MinesweeperGame {
 
 
     public static void main(String[] args) {
 
-        Minesweeper minesweeper = new Minesweeper();
+        GameLevel gameLevel = new Beginner();
+
+        Minesweeper minesweeper = new Minesweeper(gameLevel);
         minesweeper.run();
     }
 
