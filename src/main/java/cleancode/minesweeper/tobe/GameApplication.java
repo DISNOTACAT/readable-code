@@ -3,7 +3,7 @@ package cleancode.minesweeper.tobe;
 import cleancode.minesweeper.tobe.gameLevel.Beginner;
 import cleancode.minesweeper.tobe.gameLevel.GameLevel;
 
-public class MinesweeperGame {
+public class GameApplication {
 
 
     public static void main(String[] args) {
@@ -13,7 +13,4 @@ public class MinesweeperGame {
         Minesweeper minesweeper = new Minesweeper(gameLevel);
         minesweeper.run();
     }
-
-
-
 }

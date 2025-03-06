@@ -1,5 +1,9 @@
 package cleancode.minesweeper.tobe;
 
+import cleancode.minesweeper.tobe.cell.Cell;
+import cleancode.minesweeper.tobe.cell.EmptyCell;
+import cleancode.minesweeper.tobe.cell.LandMineCell;
+import cleancode.minesweeper.tobe.cell.NumberCell;
 import cleancode.minesweeper.tobe.gameLevel.GameLevel;
 import java.util.Arrays;
 import java.util.Random;
@@ -32,14 +36,13 @@ public class GameBoard {
 
     for (int row = 0; row < rowSize; row++) {
       for (int col = 0; col < colSize; col++) {
-        board[row][col] = Cell.create();
+        board[row][col] = new EmptyCell();
       }
     }
     for (int i = 0; i < landMineCount; i++) {
       int landMineCol = new Random().nextInt(colSize);
       int landMineRow = new Random().nextInt(rowSize);
-      Cell landMineCell = findCell(landMineRow, landMineCol);
-      landMineCell.turnOnLandMine();
+      board[landMineRow][landMineCol] = new LandMineCell();
     }
     for (int row = 0; row < rowSize; row++) { //  반복문 내에도 i 와 j 의 역할을 명시했다.
       for (int col = 0; col < colSize; col++) {
@@ -49,8 +52,10 @@ public class GameBoard {
         }
 
         int count = countNearByLandMines(row, col);
-        Cell cell = findCell(row, col);
-        cell.updateNearbyLandMineCount(count);
+        if(count == 0) {
+          continue;
+        }
+        board[row][col] = new NumberCell(count);
       }
     }
   }
