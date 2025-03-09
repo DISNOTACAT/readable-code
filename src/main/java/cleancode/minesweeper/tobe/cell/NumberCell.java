@@ -1,8 +1,10 @@
 package cleancode.minesweeper.tobe.cell;
 
-public class NumberCell extends cleancode.minesweeper.tobe.cell.Cell {
+public class NumberCell implements Cell {
 
   private final int nearbyLandMineCount;
+  private final CellState cellState = CellState.initialize();
+
 
   public NumberCell(int count) {
     this.nearbyLandMineCount = count;
@@ -20,13 +22,33 @@ public class NumberCell extends cleancode.minesweeper.tobe.cell.Cell {
 
   @Override
   public String getSign() {
-    if(isOpened()) {
+    if(cellState.isOpened()) {
       return String.valueOf(nearbyLandMineCount);
     }
 
-    if(isFlaged) {
+    if(cellState.isFlaged()) {
       return FLAG_SIGN;
     }
     return UNCHECKED_SIGN;
+  }
+
+  @Override
+  public void flag() {
+    cellState.flag();
+  }
+
+  @Override
+  public boolean isChecked() {
+    return cellState.isChecked();
+  }
+
+  @Override
+  public void open() {
+    .open();
+  }
+
+  @Override
+  public boolean isOpened() {
+    return cellState.isOpened();
   }
 }
