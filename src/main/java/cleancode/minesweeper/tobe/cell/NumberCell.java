@@ -44,7 +44,7 @@ public class NumberCell implements Cell {
 
   @Override
   public void open() {
-    .open();
+    cellState.open();
   }
 
   @Override

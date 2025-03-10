@@ -3,19 +3,20 @@ package cleancode.minesweeper.tobe;
 import cleancode.minesweeper.tobe.gameLevel.GameLevel;
 import cleancode.minesweeper.tobe.io.InputHandler;
 import cleancode.minesweeper.tobe.io.OutputHandler;
+import cleancode.minesweeper.tobe.position.CellPosition;
 
 public class Minesweeper implements GameInitializable, GameRunnable {
 
   private final GameBoard gameBoard;
   private final BoardIndexConverter indexConverter = new BoardIndexConverter();
-  private final InputHandler consoleInputHandler;
-  private final OutputHandler consoleOutputHandler;
+  private final InputHandler inputHandler;
+  private final OutputHandler outputHandler;
   private int gameStatus = 0; // 0: 게임 중, 1: 승리, -1: 패배
 
   public Minesweeper(GameLevel gameLevel, InputHandler consoleInputHandler, OutputHandler consoleOutputHandler) {
     gameBoard = new GameBoard(gameLevel);
-    this.consoleInputHandler = consoleInputHandler;
-    this.consoleOutputHandler = consoleOutputHandler;
+    this.inputHandler = consoleInputHandler;
+    this.outputHandler = consoleOutputHandler;
   }
 
   @Override
@@ -26,52 +27,49 @@ public class Minesweeper implements GameInitializable, GameRunnable {
   @Override
   public void run() {
 
-    consoleOutputHandler.showGameStartComments();
+    outputHandler.showGameStartComments();
 
     while (true) {
       try {
-        consoleOutputHandler.showBoard(gameBoard);
+        outputHandler.showBoard(gameBoard);
 
         if (doesUserWinTheGame()) {
-          consoleOutputHandler.showGameWinningComment();
+          outputHandler.showGameWinningComment();
           break;
         }
         if (doesUserLoseTheGame()) {
-          consoleOutputHandler.showGameLosingComment();
+          outputHandler.showGameLosingComment();
           break;
         }
 
-        String cellInput = getCellInputFromUser();
-        String userActionInput = getUserActionInput();
-        actOnCell(cellInput, userActionInput);
+        CellPosition cellPosition = getCellInputFromUser();
+        String userActionInput = getUserActionInputFromUser();
+        actOnCell(cellPosition, userActionInput);
 
       } catch (GameException e) {
-        consoleOutputHandler.showExceptionMessage(e);
+        outputHandler.showExceptionMessage(e);
 
       } catch (Exception e) {
-        consoleOutputHandler.showSimpleMessage("프로그램에 문자가 생겼습니다.");
+        outputHandler.showSimpleMessage("프로그램에 문자가 생겼습니다.");
       }
     }
   }
 
-  private void actOnCell(String cellInput, String userActionInput) {
-    int selectedColIndex = indexConverter.getSelectedColIndex(cellInput, gameBoard.getColSize());
-    int selectedRowIndex = indexConverter.getSelectedRowIndex(cellInput, gameBoard.getRowSize());
-
+  private void actOnCell(CellPosition cellPosition, String userActionInput) {
     if (doesUserChooseToPlantFlag(userActionInput)) {
-      gameBoard.flag(selectedRowIndex, selectedColIndex);
+      gameBoard.flagAt(cellPosition);
       checkIfGameIsOver();
       return;
     }
 
     if (doesUserChooseToOpenCell(userActionInput)) {
-      if (gameBoard.isLandMineCell(selectedRowIndex, selectedColIndex)) {
-        gameBoard.open(selectedRowIndex, selectedColIndex);
+      if (gameBoard.isLandMineCellAt(cellPosition)) {
+        gameBoard.openAt(cellPosition);
         changeGameStatusToLose();
         return;
       }
 
-      gameBoard.openSurroundedCells(selectedRowIndex, selectedColIndex);
+      gameBoard.openSurroundedCells(cellPosition);
       checkIfGameIsOver();
       return;
     }
@@ -93,14 +91,18 @@ public class Minesweeper implements GameInitializable, GameRunnable {
 
 
 
-  private String getUserActionInput() {
-    consoleOutputHandler.showCommentForUserAction();
-    return consoleInputHandler.getUserInput();
+  private String getUserActionInputFromUser() {
+    outputHandler.showCommentForUserAction();
+    return inputHandler.getUserInput();
   }
 
-  private String getCellInputFromUser() {
-    consoleOutputHandler.showCommentForSelectCell();
-    return consoleInputHandler.getUserInput();
+  private CellPosition getCellInputFromUser() {
+    outputHandler.showCommentForSelectCell();
+    CellPosition cellPosition = inputHandler.getCellPositionFromUser();
+    if (gameBoard.isInvalidCellPosition(cellPosition)) {
+      throw new GameException("잘못된 좌표를 선택하셨습니다.");
+    }
+    return cellPosition;
   }
 
   private boolean doesUserLoseTheGame() {
