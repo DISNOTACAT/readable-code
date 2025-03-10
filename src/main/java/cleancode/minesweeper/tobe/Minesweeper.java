@@ -63,6 +63,7 @@ public class Minesweeper implements GameInitializable, GameRunnable {
     }
 
     if (doesUserChooseToOpenCell(userActionInput)) {
+
       if (gameBoard.isLandMineCellAt(cellPosition)) {
         gameBoard.openAt(cellPosition);
         changeGameStatusToLose();
