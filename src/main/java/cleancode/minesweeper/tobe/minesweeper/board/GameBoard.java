@@ -11,6 +11,7 @@ import cleancode.minesweeper.tobe.minesweeper.board.position.CellPosition;
 import cleancode.minesweeper.tobe.minesweeper.board.position.CellPositions;
 import cleancode.minesweeper.tobe.minesweeper.board.position.RelativePosition;
 import java.util.List;
+import java.util.Stack;
 
 public class GameBoard {
 
@@ -27,7 +28,6 @@ public class GameBoard {
     initializeGameStatus();
   }
 
-  // 상태변경
   public void initializeGame() {
     initializeGameStatus();
     CellPositions cellPositions = CellPositions.from(board);
@@ -64,7 +64,6 @@ public class GameBoard {
     checkIfGameIsOver();
   }
 
-  // 판별
   public boolean isInProgress() {
     return gameStatus == GameStatus.IN_PROGRESS;
   }
@@ -89,8 +88,6 @@ public class GameBoard {
     return gameStatus == GameStatus.LOSE;
   }
 
-
-  // 조회
   public int getRowSize() {
     return board.length;
   }
@@ -104,9 +101,6 @@ public class GameBoard {
     return cell.getSnapshot();
   }
 
-
-
-  // private
   private void initializeGameStatus() {
     gameStatus = GameStatus.IN_PROGRESS;
   }
@@ -190,22 +184,33 @@ public class GameBoard {
   }
 
   private void openSurroundedCells(CellPosition cellPosition) {
-    if (isOpenedCell(cellPosition)) {
-      return;
-    }
-    if (isLandMineCellAt(cellPosition)) {
-      return;
-    }
-
-    openOneAt(cellPosition);
-
-    if (doesCellHasLandMineCount(cellPosition)) {
-      return;
+    Stack<CellPosition> stack = new Stack<>();
+    stack.push(cellPosition);
+    while (!stack.isEmpty()) {
+      openAndPushCellAt(stack);
     }
 
-    List<CellPosition> cellPositions = calculateSurroundedPositions(cellPosition, getRowSize(), getColSize());
-    cellPositions.forEach(this::openSurroundedCells);
+  }
 
+  private void openAndPushCellAt(Stack<CellPosition> stack) {
+    CellPosition currentCellPosition = stack.pop();
+    if (isOpenedCell(currentCellPosition)) {
+      return;
+    }
+    if (isLandMineCellAt(currentCellPosition)) {
+      return;
+    }
+
+    openOneAt(currentCellPosition);
+
+    if (doesCellHasLandMineCount(currentCellPosition)) {
+      return;
+    }
+
+    List<CellPosition> surroundedPositions = calculateSurroundedPositions(currentCellPosition, getRowSize(), getColSize());
+    for(CellPosition surroundedPosition : surroundedPositions) {
+      stack.push(surroundedPosition);
+    }
   }
 
   private Cell findCell(CellPosition cellPosition) {
