@@ -27,14 +27,7 @@ public class GameBoard {
     initializeGameStatus();
   }
 
-  public int getRowSize() {
-    return board.length;
-  }
-
-  public int getColSize() {
-    return board[0].length;
-  }
-
+  // 상태변경
   public void initializeGame() {
     initializeGameStatus();
     CellPositions cellPositions = CellPositions.from(board);
@@ -48,6 +41,72 @@ public class GameBoard {
     initializeNumberCells(numberPositionCandidates);
   }
 
+  public void flagAt(CellPosition cellPosition) {
+    Cell cell = findCell(cellPosition);
+    cell.flag();
+
+    checkIfGameIsOver();
+  }
+
+  private void openOneAt(CellPosition cellPosition) {
+    Cell cell = findCell(cellPosition);
+    cell.open();
+  }
+
+  public void openAt(CellPosition cellPosition) {
+    if (isLandMineCellAt(cellPosition)) {
+      openOneAt(cellPosition);
+      changeGameStatusToLose();
+      return;
+    }
+
+    openSurroundedCells(cellPosition);
+    checkIfGameIsOver();
+  }
+
+  // 판별
+  public boolean isInProgress() {
+    return gameStatus == GameStatus.IN_PROGRESS;
+  }
+
+  public boolean isInvalidCellPosition(CellPosition cellPosition) {
+    int rowSize = getRowSize();
+    int colSize = getColSize();
+
+    return cellPosition.isRowIndexMoreThanOrEqual(rowSize)
+        || cellPosition.isColIndexMoreThanOrEqual(colSize);
+  }
+
+  public boolean isLandMineCellAt(CellPosition cellPosition) {
+    return findCell(cellPosition).isLandMine();
+  }
+
+  public boolean isWinStatus() {
+    return gameStatus == GameStatus.WIN;
+  }
+
+  public boolean isLoseStatus() {
+    return gameStatus == GameStatus.LOSE;
+  }
+
+
+  // 조회
+  public int getRowSize() {
+    return board.length;
+  }
+
+  public int getColSize() {
+    return board[0].length;
+  }
+
+  public CellSnapshot getSnapshot(CellPosition cellPosition) {
+    Cell cell = findCell(cellPosition);
+    return cell.getSnapshot();
+  }
+
+
+
+  // private
   private void initializeGameStatus() {
     gameStatus = GameStatus.IN_PROGRESS;
   }
@@ -74,33 +133,8 @@ public class GameBoard {
     }
   }
 
-  public CellSnapshot getSnapshot(CellPosition cellPosition) {
-
-    Cell cell = findCell(cellPosition);
-    return cell.getSnapshot();
-  }
-
   private void updateCellAt(CellPosition position, Cell cell) {
     board[position.getRowIndex()][position.getColIndex()] = cell;
-  }
-
-  public boolean isInvalidCellPosition(CellPosition cellPosition) {
-    int rowSize = getRowSize();
-    int colSize = getColSize();
-
-    return cellPosition.isRowIndexMoreThanOrEqual(rowSize)
-        || cellPosition.isColIndexMoreThanOrEqual(colSize);
-  }
-
-  private Cell findCell(CellPosition cellPosition) {
-    return board[cellPosition.getRowIndex()][cellPosition.getColIndex()];
-  }
-
-  public void flagAt(CellPosition cellPosition) {
-    Cell cell = findCell(cellPosition);
-    cell.flag();
-
-    checkIfGameIsOver();
   }
 
   private void checkIfGameIsOver() {
@@ -113,47 +147,24 @@ public class GameBoard {
     gameStatus = GameStatus.WIN;
   }
 
-  public boolean isLandMineCellAt(CellPosition cellPosition) {
-    return findCell(cellPosition).isLandMine();
+  private void changeGameStatusToLose() {
+    gameStatus = GameStatus.LOSE;
   }
 
-  public void openOneAt(CellPosition cellPosition) {
-    Cell cell = findCell(cellPosition);
-    cell.open();
-  }
 
-  public void openSurroundedCells(CellPosition cellPosition) {
-    if (isOpenedCell(cellPosition)) {
-      return;
-    }
-    if (isLandMineCellAt(cellPosition)) {
-      return;
-    }
-
-    openOneAt(cellPosition);
-
-    if (doesCellHasLandMineCount(cellPosition)) {
-      return;
-    }
-
-    List<CellPosition> cellPositions = calculateSurroundedPositions(cellPosition, getRowSize(), getColSize());
-    cellPositions.forEach(this::openSurroundedCells);
-
-  }
-
-  public boolean isAllCellChecked() {
+  private boolean isAllCellChecked() {
     Cells cells = Cells.from(board);
     return cells.isAllChecked();
-  }
-
-  private boolean doesCellHasLandMineCount(CellPosition cellPosition) {
-    Cell cell = findCell(cellPosition);
-    return cell.hasLandMineCount();
   }
 
   private boolean isOpenedCell(CellPosition cellPosition) {
     Cell cell = findCell(cellPosition);
     return cell.isOpened();
+  }
+
+  private boolean doesCellHasLandMineCount(CellPosition cellPosition) {
+    Cell cell = findCell(cellPosition);
+    return cell.hasLandMineCount();
   }
 
   private int countNearByLandMines(CellPosition cellPosition) {
@@ -178,31 +189,26 @@ public class GameBoard {
         .toList();
   }
 
-
-  public boolean isInProgress() {
-    return gameStatus == GameStatus.IN_PROGRESS;
-  }
-
-  public void openAt(CellPosition cellPosition) {
+  private void openSurroundedCells(CellPosition cellPosition) {
+    if (isOpenedCell(cellPosition)) {
+      return;
+    }
     if (isLandMineCellAt(cellPosition)) {
-      openOneAt(cellPosition);
-      changeGameStatusToLose();
       return;
     }
 
-    openSurroundedCells(cellPosition);
-    checkIfGameIsOver();
+    openOneAt(cellPosition);
+
+    if (doesCellHasLandMineCount(cellPosition)) {
+      return;
+    }
+
+    List<CellPosition> cellPositions = calculateSurroundedPositions(cellPosition, getRowSize(), getColSize());
+    cellPositions.forEach(this::openSurroundedCells);
+
   }
 
-  private void changeGameStatusToLose() {
-    gameStatus = GameStatus.LOSE;
-  }
-
-  public boolean isWinStatus() {
-    return gameStatus == GameStatus.WIN;
-  }
-
-  public boolean isLoseStatus() {
-    return gameStatus == GameStatus.LOSE;
+  private Cell findCell(CellPosition cellPosition) {
+    return board[cellPosition.getRowIndex()][cellPosition.getColIndex()];
   }
 }
