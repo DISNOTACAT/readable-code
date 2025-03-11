@@ -72,7 +72,8 @@ public class Minesweeper implements GameInitializable, GameRunnable {
     return inputHandler.getUserActionFromUser();
   }
 
-  private void actOnCell(CellPosition cellPosition, UserAction userActionInput) {
+  private void actOnCell(CellPosition cellPosition,
+      UserAction userActionInput) {
 
     if (doesUserChooseToPlantFlag(userActionInput)) {
       gameBoard.flagAt(cellPosition);
@@ -94,11 +95,6 @@ public class Minesweeper implements GameInitializable, GameRunnable {
   private boolean doesUserChooseToPlantFlag(UserAction userActionInput) {
     return userActionInput == UserAction.FLAG;
   }
-
-
-
-
-
 
 
 }
