@@ -12,4 +12,16 @@ public enum StudyCafePassType {
         this.description = description;
     }
 
+    public static boolean isHourlyPass(StudyCafePassType type) {
+        return type == StudyCafePassType.HOURLY;
+    }
+
+    public static boolean isWeekly(StudyCafePassType type) {
+        return type == StudyCafePassType.WEEKLY;
+    }
+
+    public static boolean isFixedPass(StudyCafePassType type) {
+        return type == StudyCafePassType.FIXED;
+    }
+
 }
