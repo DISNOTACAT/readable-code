@@ -12,7 +12,15 @@ import java.util.List;
 
 public class StudyCafeFileHandler {
 
-    public List<StudyCafePass> readStudyCafePasses() {
+    public List<StudyCafePass> candidatesPassesFrom(StudyCafePassType type) {
+
+        List<StudyCafePass> studyCafePasses = readStudyCafePasses();
+        return studyCafePasses.stream()
+            .filter(studyCafePass -> studyCafePass.getPassType() == type)
+            .toList();
+    }
+
+    private List<StudyCafePass> readStudyCafePasses() {
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv"));
             List<StudyCafePass> studyCafePasses = new ArrayList<>();
