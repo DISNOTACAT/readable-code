@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class StudyCafeFileHandler {
 
@@ -20,7 +21,7 @@ public class StudyCafeFileHandler {
             .toList();
     }
 
-    public StudyCafeLockerPass getLockerPassFrom(StudyCafePass pass) {
+    public Optional<StudyCafeLockerPass> getLockerPassFrom(StudyCafePass pass) {
 
         List<StudyCafeLockerPass> lockerPasses = readLockerPasses();
         return lockerPasses.stream()
@@ -29,8 +30,7 @@ public class StudyCafeFileHandler {
                     && option.getDuration()
                     == pass.getDuration()
             )
-            .findFirst()
-            .orElse(null);
+            .findFirst();
     }
 
     private List<StudyCafePass> readStudyCafePasses() {
