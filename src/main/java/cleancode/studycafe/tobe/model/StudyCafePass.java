@@ -1,5 +1,9 @@
 package cleancode.studycafe.tobe.model;
 
+import static cleancode.studycafe.tobe.model.StudyCafePassType.isFixedPass;
+import static cleancode.studycafe.tobe.model.StudyCafePassType.isHourlyPass;
+import static cleancode.studycafe.tobe.model.StudyCafePassType.isWeeklyPass;
+
 public class StudyCafePass {
 
     private final StudyCafePassType passType;
@@ -35,13 +39,13 @@ public class StudyCafePass {
     }
 
     public String display() {
-        if (passType == StudyCafePassType.HOURLY) {
+        if (isHourlyPass(passType)) {
             return String.format("%s시간권 - %d원", duration, price);
         }
-        if (passType == StudyCafePassType.WEEKLY) {
+        if (isWeeklyPass(passType)) {
             return String.format("%s주권 - %d원", duration, price);
         }
-        if (passType == StudyCafePassType.FIXED) {
+        if (isFixedPass(passType)) {
             return String.format("%s주권 - %d원", duration, price);
         }
         return "";

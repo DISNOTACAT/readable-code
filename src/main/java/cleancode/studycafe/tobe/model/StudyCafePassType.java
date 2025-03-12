@@ -16,7 +16,7 @@ public enum StudyCafePassType {
         return type == StudyCafePassType.HOURLY;
     }
 
-    public static boolean isWeekly(StudyCafePassType type) {
+    public static boolean isWeeklyPass(StudyCafePassType type) {
         return type == StudyCafePassType.WEEKLY;
     }
 
