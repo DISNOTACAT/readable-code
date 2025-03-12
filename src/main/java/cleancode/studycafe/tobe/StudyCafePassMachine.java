@@ -35,16 +35,7 @@ public class StudyCafePassMachine {
             }
 
             if (isFixedPass(studyCafePassTypeFromUser)) {
-
-                List<StudyCafeLockerPass> lockerPasses = studyCafeFileHandler.readLockerPasses();
-                StudyCafeLockerPass lockerPass = lockerPasses.stream()
-                    .filter(option ->
-                        option.getPassType() == selectedPass.getPassType()
-                            && option.getDuration()
-                            == selectedPass.getDuration()
-                    )
-                    .findFirst()
-                    .orElse(null);
+                StudyCafeLockerPass lockerPass = studyCafeFileHandler.getLockerPassFrom(selectedPass);
 
                 boolean lockerSelection = false;
                 if (lockerPass != null) {
