@@ -66,7 +66,7 @@ class GameBoardTest {
 
   @DisplayName("[GameBoard] 지뢰인 셀을 열면 게임 상태는 실패, 지뢰가 아니면 실패하지 않음")
   @Test
-  void test() {
+  void isLoseWhenOpenCell() {
     // given
     GameBoard gameBoard = gameInitWithBeginnerLevel();
     CellPosition cellPosition = CellPosition.of(0, 0);

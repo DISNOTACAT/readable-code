@@ -9,7 +9,7 @@ class CellStateTest {
 
   @DisplayName("[CellState] CellState 초기화시 flag와 open은 false 상태이다.")
   @Test
-  void test() {
+  void isCellStateFalseWhenInit() {
     // given & when
     CellState cellState = CellState.initialize();
 
